@@ -6,6 +6,7 @@ package com.icerockdev.service.tinkoff
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.icerockdev.service.tinkoff.exception.TinkoffErrorException
 import com.icerockdev.service.tinkoff.response.ErrorResponse
 import com.icerockdev.service.tinkoff.response.Response
 import io.ktor.client.HttpClient
@@ -46,7 +47,10 @@ internal class TinkoffMerchantAPI(
             }
         } catch (cause: Throwable) {
             val error = mapper.readValue<ErrorResponse>(response)
-            throw TinkoffErrorException(error.errorCode.toInt(), error.message.toString())
+            throw TinkoffErrorException(
+                error.errorCode.toInt(),
+                error.message.toString()
+            )
         }
     }
 }

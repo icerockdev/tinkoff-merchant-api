@@ -7,6 +7,7 @@ package com.icerockdev.service.tinkoff
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.icerockdev.service.tinkoff.exception.TinkoffValidationException
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -89,6 +90,18 @@ class TinkoffClientTest {
     }
 
     @Test
+    fun initFailTest() = runBlocking {
+        val amount = 10000
+        val orderId = "LONG_${randomOrderId()}"
+
+        val result = try {
+            tinkoffClient.init(amount, orderId)
+        } catch (e: TinkoffValidationException) {
+            assertEquals(e.message, "OrderId length should be between 1 anf 20.")
+        }
+    }
+
+    @Test
     fun confirmTest() = runBlocking {
         val paymentId = randomPaymentId()
         val response = tinkoffClient.confirm(paymentId)
@@ -98,7 +111,7 @@ class TinkoffClientTest {
     }
 
     private fun randomOrderId(): String {
-        return "MERCHANT_API_TEST_ORDER_ID_${randomString()}"
+        return "TEST_ORDER_ID_${randomString()}"
     }
 
     private fun randomPaymentId(): Int {
