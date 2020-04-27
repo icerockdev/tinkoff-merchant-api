@@ -48,8 +48,8 @@ internal class TinkoffMerchantAPI(
         } catch (cause: Throwable) {
             val error = mapper.readValue<ErrorResponse>(response)
             throw TinkoffErrorException(
-                error.errorCode.toInt(),
-                error.message.toString()
+                error.message.toString(),
+                error.errorCode.toInt()
             )
         }
     }

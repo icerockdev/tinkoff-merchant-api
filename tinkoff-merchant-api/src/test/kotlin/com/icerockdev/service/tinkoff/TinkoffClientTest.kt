@@ -46,7 +46,7 @@ class TinkoffClientTest {
 
                 val orderId = payload["OrderId"]
                 val amount = payload["Amount"]
-                val paymentId = payload["PaymentId"]
+                val paymentId = 13660
 
                 when (request.url.fullPath) {
                     "/v2/Init" -> {
@@ -55,7 +55,7 @@ class TinkoffClientTest {
                                 "\"ErrorCode\" : \"0\",\n" +
                                 "\"TerminalKey\" : \"1234567890123DEMO\",\n" +
                                 "\"Status\" : \"NEW\",\n" +
-                                "\"PaymentId \": \"13660\",\n" +
+                                "\"PaymentId\": \"${paymentId}\",\n" +
                                 "\"OrderId\" : \"${orderId}\",\n" +
                                 "\"Amount\" : ${amount},\n" +
                                 "\"PaymentURL\" : \"https://securepay.tinkoff.ru/rest/Authorize/1B63Y1\"\n" +

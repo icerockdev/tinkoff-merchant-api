@@ -11,10 +11,9 @@ enum class TinkoffFormLanguage(val value: String) {
     EN("en");
 
     companion object {
-        fun valuesList(): ArrayList<String> = arrayListOf(
-            RU.value,
-            EN.value
-        )
+        fun valuesList(): List<String> {
+            return values().map { it.value }
+        }
     }
 }
 
@@ -38,25 +37,9 @@ enum class TinkoffStatus(val value: String) {
     REJECTED("REJECTED");
 
     companion object {
-        fun valuesList(): ArrayList<String> = arrayListOf(
-            NEW.value,
-            CANCELED.value,
-            FORMSHOWED.value,
-            DEADLINE_EXPIRED.value,
-            AUTHORIZING.value,
-            THREE_DS_CHECKING.value,
-            THREE_DS_CHECKED.value,
-            AUTH_FAIL.value,
-            AUTHORIZED.value,
-            REVERSING.value,
-            REVERSED.value,
-            CONFIRMING.value,
-            CONFIRMED.value,
-            REFUNDING.value,
-            PARTIAL_REFUNDED.value,
-            REFUNDED.value,
-            REJECTED.value
-        )
+        fun valuesList(): List<String> {
+            return values().map { it.value }
+        }
     }
 }
 
@@ -65,10 +48,9 @@ enum class TinkoffPayType(val value: String) {
     TWO_STAGE("T");
 
     companion object {
-        fun valuesList(): ArrayList<String> = arrayListOf(
-            ONE_STAGE.value,
-            TWO_STAGE.value
-        )
+        fun valuesList(): List<String> {
+            return values().map { it.value }
+        }
     }
 }
 

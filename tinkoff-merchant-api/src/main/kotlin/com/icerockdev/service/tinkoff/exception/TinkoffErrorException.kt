@@ -4,4 +4,4 @@
 
 package com.icerockdev.service.tinkoff.exception
 
-class TinkoffErrorException(val code: Int, override val message: String): Throwable(message)
+class TinkoffErrorException(override val message: String, val code: Int): Throwable(message)

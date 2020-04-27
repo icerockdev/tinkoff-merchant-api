@@ -273,7 +273,7 @@ class TinkoffClient(
         }
     }
 
-    private fun validateInEnum(name: String, value: String, list: ArrayList<String>) {
+    private fun validateInEnum(name: String, value: String, list: List<String>) {
         if (!list.contains(value)) {
             throw TinkoffValidationException("$name should be in list (${list.joinToString(", ")}).")
         }
