@@ -1,0 +1,20 @@
+POST http://127.0.0.1:8080/init
+Content-Type: application/json
+
+{
+  "amount": 10000,
+  "orderId": "TEST_ORDER_ID_000001"
+}
+
+> {% client.global.set("paymentId", response.body.paymentId) %}
+
+###
+
+POST http://127.0.0.1:8080/confirm
+Content-Type: application/json
+
+{
+  "paymentId": "{{paymentId}}"
+}
+
+###

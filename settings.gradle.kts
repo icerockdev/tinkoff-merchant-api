@@ -35,6 +35,5 @@ val properties = startParameter.projectProperties
 // ./gradlew -DBINTRAY_USER=user -DBINTRAY_KEY=key -PlibraryPublish :sms-service:publish
 val libraryPublish: Boolean = properties.containsKey("libraryPublish")
 if(!libraryPublish) {
-    // TODO: append sample
-//    include(":sample")
+    include(":sample")
 }
