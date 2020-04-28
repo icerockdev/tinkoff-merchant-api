@@ -44,9 +44,9 @@ class TinkoffClientTest {
                 val json = (request.body as TextContent).text
                 val payload: Map<String, Any> = mapper.readValue(json, object : TypeReference<Map<String, Any>>(){})
 
-                val orderId = payload["OrderId"]
                 val amount = payload["Amount"]
-                val paymentId = 13660
+                val orderId = payload["OrderId"] ?: randomOrderId()
+                val paymentId = payload["PaymentId"] ?: randomPaymentId()
 
                 when (request.url.fullPath) {
                     "/v2/Init" -> {
@@ -94,11 +94,13 @@ class TinkoffClientTest {
         val amount = 10000
         val orderId = "LONG_${randomOrderId()}"
 
-        val result = try {
+        try {
             tinkoffClient.init(amount, orderId)
         } catch (e: TinkoffValidationException) {
             assertEquals(e.message, "OrderId length should be between 1 anf 20.")
         }
+
+        Unit
     }
 
     @Test

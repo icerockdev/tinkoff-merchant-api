@@ -54,3 +54,14 @@ enum class TinkoffPayType(val value: String) {
     }
 }
 
+// TODO: Describe all error codes
+enum class TinkoffErrorCode(val value: Int) {
+    NONE(0),
+    INTERNAL(9999);
+
+    companion object {
+        fun valuesList(): List<Int> {
+            return values().map { it.value }
+        }
+    }
+}
