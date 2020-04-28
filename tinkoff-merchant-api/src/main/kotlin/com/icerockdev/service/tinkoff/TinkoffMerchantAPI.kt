@@ -4,8 +4,10 @@
 
 package com.icerockdev.service.tinkoff
 
+import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.icerockdev.service.tinkoff.exception.TinkoffErrorException
 import com.icerockdev.service.tinkoff.response.ErrorResponse
 import com.icerockdev.service.tinkoff.response.Response
 import io.ktor.client.HttpClient
@@ -41,12 +43,19 @@ internal class TinkoffMerchantAPI(
         return try {
             val result = mapper.readValue<T>(response)
             when {
-                !result.success -> throw Exception(result.errorCode)
+                !result.success -> throw Exception()
                 else -> result
             }
         } catch (cause: Throwable) {
-            val error = mapper.readValue<ErrorResponse>(response)
-            throw TinkoffErrorException(error.errorCode.toInt(), error.message.toString())
+            try {
+                val error = mapper.readValue<ErrorResponse>(response)
+                throw TinkoffErrorException(
+                    error.message.toString(),
+                    error.errorCode.toInt()
+                )
+            } catch (cause: JsonParseException) {
+                throw TinkoffErrorException(cause.message ?: "", TinkoffErrorCode.INTERNAL.value)
+            }
         }
     }
 }

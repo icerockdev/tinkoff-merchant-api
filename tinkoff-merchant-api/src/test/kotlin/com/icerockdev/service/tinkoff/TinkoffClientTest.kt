@@ -7,6 +7,7 @@ package com.icerockdev.service.tinkoff
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.icerockdev.service.tinkoff.exception.TinkoffValidationException
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -43,9 +44,9 @@ class TinkoffClientTest {
                 val json = (request.body as TextContent).text
                 val payload: Map<String, Any> = mapper.readValue(json, object : TypeReference<Map<String, Any>>(){})
 
-                val orderId = payload["OrderId"]
                 val amount = payload["Amount"]
-                val paymentId = payload["PaymentId"]
+                val orderId = payload["OrderId"] ?: randomOrderId()
+                val paymentId = payload["PaymentId"] ?: randomPaymentId()
 
                 when (request.url.fullPath) {
                     "/v2/Init" -> {
@@ -54,7 +55,7 @@ class TinkoffClientTest {
                                 "\"ErrorCode\" : \"0\",\n" +
                                 "\"TerminalKey\" : \"1234567890123DEMO\",\n" +
                                 "\"Status\" : \"NEW\",\n" +
-                                "\"PaymentId \": \"13660\",\n" +
+                                "\"PaymentId\": \"${paymentId}\",\n" +
                                 "\"OrderId\" : \"${orderId}\",\n" +
                                 "\"Amount\" : ${amount},\n" +
                                 "\"PaymentURL\" : \"https://securepay.tinkoff.ru/rest/Authorize/1B63Y1\"\n" +
@@ -89,6 +90,20 @@ class TinkoffClientTest {
     }
 
     @Test
+    fun initFailTest() = runBlocking {
+        val amount = 10000
+        val orderId = "LONG_${randomOrderId()}"
+
+        try {
+            tinkoffClient.init(amount, orderId)
+        } catch (e: TinkoffValidationException) {
+            assertEquals(e.message, "OrderId length should be between 1 anf 20.")
+        }
+
+        Unit
+    }
+
+    @Test
     fun confirmTest() = runBlocking {
         val paymentId = randomPaymentId()
         val response = tinkoffClient.confirm(paymentId)
@@ -98,7 +113,7 @@ class TinkoffClientTest {
     }
 
     private fun randomOrderId(): String {
-        return "MERCHANT_API_TEST_ORDER_ID_${randomString()}"
+        return "TEST_ORDER_ID_${randomString()}"
     }
 
     private fun randomPaymentId(): Int {

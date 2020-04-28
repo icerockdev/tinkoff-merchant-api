@@ -4,6 +4,19 @@
 
 package com.icerockdev.service.tinkoff
 
+const val TINKOFF_RECURRENT_VALUE = "Y"
+
+enum class TinkoffFormLanguage(val value: String) {
+    RU("ru"),
+    EN("en");
+
+    companion object {
+        fun valuesList(): List<String> {
+            return values().map { it.value }
+        }
+    }
+}
+
 enum class TinkoffStatus(val value: String) {
     NEW("NEW"),
     CANCELED("CANCELED"),
@@ -21,10 +34,34 @@ enum class TinkoffStatus(val value: String) {
     REFUNDING("REFUNDING"),
     PARTIAL_REFUNDED("PARTIAL_REFUNDED"),
     REFUNDED("REFUNDED"),
-    REJECTED("REJECTED"),
+    REJECTED("REJECTED");
+
+    companion object {
+        fun valuesList(): List<String> {
+            return values().map { it.value }
+        }
+    }
 }
 
 enum class TinkoffPayType(val value: String) {
     ONE_STAGE("О"),
-    TWO_STAGE("T"),
+    TWO_STAGE("T");
+
+    companion object {
+        fun valuesList(): List<String> {
+            return values().map { it.value }
+        }
+    }
+}
+
+// TODO: Describe all error codes
+enum class TinkoffErrorCode(val value: Int) {
+    NONE(0),
+    INTERNAL(9999);
+
+    companion object {
+        fun valuesList(): List<Int> {
+            return values().map { it.value }
+        }
+    }
 }
