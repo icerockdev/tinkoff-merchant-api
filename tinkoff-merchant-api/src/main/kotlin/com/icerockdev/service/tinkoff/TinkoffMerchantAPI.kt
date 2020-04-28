@@ -43,7 +43,7 @@ internal class TinkoffMerchantAPI(
         return try {
             val result = mapper.readValue<T>(response)
             when {
-                !result.success -> throw Exception(result.errorCode)
+                !result.success -> throw Exception()
                 else -> result
             }
         } catch (cause: Throwable) {
