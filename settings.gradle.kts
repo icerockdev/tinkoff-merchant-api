@@ -32,7 +32,7 @@ include(":tinkoff-merchant-api")
 val properties = startParameter.projectProperties
 
 // ./gradlew -PlibraryPublish publishToMavenLocal
-// ./gradlew -DBINTRAY_USER=user -DBINTRAY_KEY=key -PlibraryPublish :sms-service:publish
+// ./gradlew -DBINTRAY_USER=user -DBINTRAY_KEY=key -PlibraryPublish :tinkoff-merchant-api:publish
 val libraryPublish: Boolean = properties.containsKey("libraryPublish")
 if(!libraryPublish) {
     include(":sample")
