@@ -13,18 +13,14 @@ apply(plugin = "java")
 apply(plugin = "kotlin")
 
 group = "com.icerockdev.service"
-version = "0.1.0"
+version = "0.2.0"
 
 val sourcesJar by tasks.registering(Jar::class) {
-    classifier = "sources"
+    archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource)
 }
 
 dependencies {
-    // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${properties["kotlin_version"]}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${properties["coroutines_version"]}")
-
     // Logging
     implementation("ch.qos.logback:logback-classic:${properties["logback_version"]}")
 
@@ -38,17 +34,16 @@ dependencies {
     // tests
     testImplementation("io.ktor:ktor-server-tests:${properties["ktor_version"]}")
     testImplementation("io.ktor:ktor-client-mock:${properties["ktor_version"]}")
-    testImplementation("io.ktor:ktor-client-mock-jvm:${properties["ktor_version"]}")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 }
 

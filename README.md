@@ -11,7 +11,7 @@ repositories {
 }
 
 // Append dependency
-implementation("com.icerockdev.service:tinkoff-merchant-api:0.1.0")
+implementation("com.icerockdev.service:tinkoff-merchant-api:0.2.0")
 ```
 
 ## Usage
