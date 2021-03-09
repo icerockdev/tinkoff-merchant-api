@@ -49,7 +49,7 @@ val jar by tasks.getting(Jar::class) {
     archiveFileName.set("sample.jar")
     destinationDirectory.set(file("${project.rootDir}/build"))
     manifest {
-        attributes["Main-Class"] = application.mainClass
+        attributes["Main-Class"] = application.mainClass.get()
         attributes["Class-Path"] = configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.joinToString { "libs/${it.name}" }
     }
 }
