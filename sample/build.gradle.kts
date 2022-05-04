@@ -19,7 +19,7 @@ version = "0.0.1"
 apply(plugin = "kotlin")
 
 repositories {
-    maven { setUrl("https://dl.bintray.com/icerockdev/backend") }
+    mavenCentral()
 }
 
 application {
@@ -27,10 +27,9 @@ application {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${properties["kotlin_version"]}")
     implementation("biz.paluch.logging:logstash-gelf:1.13.0")
 
-    implementation("com.icerockdev:web-utils:0.2.0")
+    implementation("com.icerockdev:web-utils:0.9.4")
     implementation(project(":tinkoff-merchant-api"))
 }
 

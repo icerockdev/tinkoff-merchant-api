@@ -4,60 +4,67 @@
 
 package com.icerockdev.sample
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.icerockdev.api.AbstractResponse
 import com.icerockdev.api.Request
+import com.icerockdev.api.request.QueryParser
 import com.icerockdev.service.tinkoff.TinkoffClient
 import com.icerockdev.service.tinkoff.TinkoffCredential
 import com.icerockdev.service.tinkoff.TinkoffUtils
-import com.icerockdev.util.QueryParser
-import com.icerockdev.webserver.*
-import com.icerockdev.webserver.log.JsonDataLogger
+import com.icerockdev.webserver.applyCallConfiguration
+import com.icerockdev.webserver.applyDefaultCORS
+import com.icerockdev.webserver.applyDefaultConfiguration
+import com.icerockdev.webserver.applyDefaultLogging
+import com.icerockdev.webserver.applyDefaultStatusConfiguration
+import com.icerockdev.webserver.log.ApplicationCallLogging
 import com.icerockdev.webserver.tools.receiveRequest
 import io.ktor.application.Application
-import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.features.*
+import io.ktor.features.CORS
+import io.ktor.features.CallId
+import io.ktor.features.ContentNegotiation
+import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
 import io.ktor.routing.post
 import io.ktor.routing.routing
-import io.ktor.util.KtorExperimentalAPI
+import org.slf4j.LoggerFactory
 
-@KtorExperimentalAPI
 fun Application.main() {
-    install(StatusPages, getStatusConfiguration())
+    install(StatusPages) {
+        applyDefaultStatusConfiguration(
+            logger = LoggerFactory.getLogger(Application::class.java)
+        )
+    }
     install(CORS) {
         applyDefaultCORS()
         anyHost() // TODO: Don't do this in production if possible. Try to limit it.
     }
     install(DefaultHeaders)
-    install(CallLogging) {
+    install(ApplicationCallLogging) {
         applyDefaultLogging()
     }
-    install(JsonDataLogger) {
-        mapperConfiguration = getObjectMapper()
+
+    install(CallId) {
+        applyCallConfiguration()
     }
-    install(CallId, getCallConfiguration())
     install(ContentNegotiation) {
-        jackson(block = getObjectMapper())
+        jackson {
+            applyDefaultConfiguration()
+        }
     }
     install(QueryParser) {
-        mapperConfiguration = getObjectMapper()
+        mapperConfiguration = {
+            applyDefaultConfiguration()
+        }
     }
 
-    /**
-     * @see <a href="https://ktor.io/advanced/pipeline.html#ktor-pipelines">Ktor Documentation</a>
-     */
-    intercept(ApplicationCallPipeline.Monitoring, getMonitoringPipeline())
-
     val credential = TinkoffCredential(
-        terminalKey = "1234567890123DEMO",
-        secretKey = "n6sd22449gugk8mb"
+        terminalKey = "", // set terminal key from personal account
+        secretKey = "" // set terminal password from personal account
     )
     val utils = TinkoffUtils(credential)
-    val mapper = ObjectMapper()
     val tinkoffClient = TinkoffClient(credential = credential, utils = utils)
 
     routing {
