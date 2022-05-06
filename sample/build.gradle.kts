@@ -29,7 +29,7 @@ application {
 dependencies {
     implementation("biz.paluch.logging:logstash-gelf:1.13.0")
 
-    implementation("com.icerockdev:web-utils:0.9.4")
+    implementation("com.icerockdev:web-utils:0.10.0")
     implementation(project(":tinkoff-merchant-api"))
 }
 
