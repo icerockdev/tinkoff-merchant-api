@@ -19,21 +19,28 @@ import kotlin.math.abs
 import kotlin.math.log10
 
 class TinkoffClient(
-    client: HttpClient = HttpClient(Apache) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer {
-                setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            }
-        }
-        install(Logging) {
-            logger = Logger.DEFAULT
-            this.level = LogLevel.INFO
-        }
-    },
+    client: HttpClient,
     credential: TinkoffCredential,
     utils: TinkoffUtils
 ) {
-    private val api: TinkoffMerchantAPI = TinkoffMerchantAPI(client = client, credential = credential, utils = utils);
+
+    constructor(credential: TinkoffCredential, utils: TinkoffUtils) : this(
+        client = HttpClient(Apache) {
+            install(JsonFeature) {
+                serializer = JacksonSerializer {
+                    setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                }
+            }
+            install(Logging) {
+                logger = Logger.DEFAULT
+                this.level = LogLevel.INFO
+            }
+        },
+        credential = credential,
+        utils = utils
+    )
+
+    private val api: TinkoffMerchantAPI = TinkoffMerchantAPI(client = client, credential = credential, utils = utils)
 
     /**
      * @see <a href="https://oplata.tinkoff.ru/develop/api/payments/init-description/">Init</a>

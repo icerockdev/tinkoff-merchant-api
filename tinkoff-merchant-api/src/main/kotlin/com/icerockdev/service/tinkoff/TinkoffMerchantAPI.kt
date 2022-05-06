@@ -5,7 +5,7 @@
 package com.icerockdev.service.tinkoff
 
 import com.fasterxml.jackson.core.JsonParseException
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.icerockdev.service.tinkoff.exception.TinkoffErrorException
 import com.icerockdev.service.tinkoff.response.ErrorResponse
@@ -20,7 +20,7 @@ internal class TinkoffMerchantAPI(
     val credential: TinkoffCredential,
     val utils: TinkoffUtils
 ) {
-    val mapper = ObjectMapper()
+    val mapper = jacksonObjectMapper()
 
     suspend inline fun <reified T : Response> buildQuery(
         path: String,
@@ -51,7 +51,8 @@ internal class TinkoffMerchantAPI(
                 val error = mapper.readValue<ErrorResponse>(response)
                 throw TinkoffErrorException(
                     error.message.toString(),
-                    error.errorCode.toInt()
+                    error.errorCode.toInt(),
+                    error.details
                 )
             } catch (cause: JsonParseException) {
                 throw TinkoffErrorException(cause.message ?: "", TinkoffErrorCode.INTERNAL.value)
