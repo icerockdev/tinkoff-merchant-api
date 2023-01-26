@@ -6,15 +6,24 @@ package com.icerockdev.service.tinkoff
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.icerockdev.service.tinkoff.exception.TinkoffValidationException
-import com.icerockdev.service.tinkoff.response.*
+import com.icerockdev.service.tinkoff.response.CancelResponse
+import com.icerockdev.service.tinkoff.response.CardListResponse
+import com.icerockdev.service.tinkoff.response.CardResponse
+import com.icerockdev.service.tinkoff.response.ChargeResponse
+import com.icerockdev.service.tinkoff.response.ConfirmResponse
+import com.icerockdev.service.tinkoff.response.CustomerResponse
+import com.icerockdev.service.tinkoff.response.EmptyResponse
+import com.icerockdev.service.tinkoff.response.GetStateResponse
+import com.icerockdev.service.tinkoff.response.InitResponse
+import com.icerockdev.service.tinkoff.response.ResendResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.serialization.jackson.jackson
 import kotlin.math.abs
 import kotlin.math.log10
 
@@ -26,8 +35,8 @@ class TinkoffClient(
 
     constructor(credential: TinkoffCredential, utils: TinkoffUtils) : this(
         client = HttpClient(Apache) {
-            install(JsonFeature) {
-                serializer = JacksonSerializer {
+            install(ContentNegotiation) {
+                jackson {
                     setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 }
             }

@@ -12,16 +12,16 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondError
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.engine.mock.toByteArray
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.TextContent
 import io.ktor.http.fullPath
 import io.ktor.http.headersOf
+import io.ktor.serialization.jackson.jackson
+import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import kotlin.test.assertEquals
 
 @Suppress("BlockingMethodInNonBlockingContext")
 class TinkoffClientTest {
@@ -33,16 +33,18 @@ class TinkoffClientTest {
     )
     private val utils: TinkoffUtils = TinkoffUtils(credential)
     private val mockHttpClient: HttpClient = HttpClient(MockEngine) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer {
-                setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        install(ContentNegotiation) {
+            jackson {
+                setSerializationInclusion(JsonInclude.Include.NON_NULL)
             }
         }
         engine {
             addHandler { request ->
                 val headers = headersOf("Content-Type" to listOf(ContentType.Application.Json.toString()))
-                val json = (request.body as TextContent).text
-                val payload: Map<String, Any> = mapper.readValue(json, object : TypeReference<Map<String, Any>>(){})
+                val payload: Map<String, Any> = mapper.readValue(
+                    request.body.toByteArray(),
+                    object : TypeReference<Map<String, Any>>() {}
+                )
 
                 val amount = payload["Amount"]
                 val orderId = payload["OrderId"] ?: randomOrderId()
@@ -50,33 +52,40 @@ class TinkoffClientTest {
 
                 when (request.url.fullPath) {
                     "/v2/Init" -> {
-                        respond("{\n" +
-                                "\"Success\" : true,\n" +
-                                "\"ErrorCode\" : \"0\",\n" +
-                                "\"TerminalKey\" : \"1234567890123DEMO\",\n" +
-                                "\"Status\" : \"NEW\",\n" +
-                                "\"PaymentId\": \"${paymentId}\",\n" +
-                                "\"OrderId\" : \"${orderId}\",\n" +
-                                "\"Amount\" : ${amount},\n" +
-                                "\"PaymentURL\" : \"https://securepay.tinkoff.ru/rest/Authorize/1B63Y1\"\n" +
-                                "}", headers = headers)
+                        respond(
+                            "{\n" +
+                                    "\"Success\" : true,\n" +
+                                    "\"ErrorCode\" : \"0\",\n" +
+                                    "\"TerminalKey\" : \"1234567890123DEMO\",\n" +
+                                    "\"Status\" : \"NEW\",\n" +
+                                    "\"PaymentId\": \"${paymentId}\",\n" +
+                                    "\"OrderId\" : \"${orderId}\",\n" +
+                                    "\"Amount\" : ${amount},\n" +
+                                    "\"PaymentURL\" : \"https://securepay.tinkoff.ru/rest/Authorize/1B63Y1\"\n" +
+                                    "}", headers = headers
+                        )
                     }
+
                     "/v2/Confirm" -> {
-                        respond("{\n" +
-                                " \"Success\" :  true,\n" +
-                                " \"ErrorCode\" :  \"0\",\n" +
-                                " \"TerminalKey\" : \"1234567890123DEMO\",\n" +
-                                " \"Status\" : \"CONFIRMED\",\n" +
-                                " \"PaymentId\" : \"${paymentId}\",\n" +
-                                " \"OrderId\" : \"${orderId}\"\n" +
-                                "}", headers = headers)
+                        respond(
+                            "{\n" +
+                                    " \"Success\" :  true,\n" +
+                                    " \"ErrorCode\" :  \"0\",\n" +
+                                    " \"TerminalKey\" : \"1234567890123DEMO\",\n" +
+                                    " \"Status\" : \"CONFIRMED\",\n" +
+                                    " \"PaymentId\" : \"${paymentId}\",\n" +
+                                    " \"OrderId\" : \"${orderId}\"\n" +
+                                    "}", headers = headers
+                        )
                     }
+
                     else -> respondError(status = HttpStatusCode.InternalServerError, headers = headers)
                 }
             }
         }
     }
-    private val tinkoffClient: TinkoffClient = TinkoffClient(client = mockHttpClient, credential = credential, utils = utils)
+    private val tinkoffClient: TinkoffClient =
+        TinkoffClient(client = mockHttpClient, credential = credential, utils = utils)
 
     @Test
     fun initTest() = runBlocking {

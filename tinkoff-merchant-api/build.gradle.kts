@@ -16,7 +16,7 @@ apply(plugin = "java")
 apply(plugin = "kotlin")
 
 group = "com.icerockdev.service"
-version = "0.3.0"
+version = "1.0.0"
 
 val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
@@ -29,9 +29,9 @@ dependencies {
 
     // Ktor
     implementation("io.ktor:ktor-client-core:${properties["ktor_version"]}")
-    implementation("io.ktor:ktor-client-json:${properties["ktor_version"]}")
     implementation("io.ktor:ktor-client-apache:${properties["ktor_version"]}")
-    implementation("io.ktor:ktor-client-jackson:${properties["ktor_version"]}")
+    implementation("io.ktor:ktor-client-content-negotiation:${properties["ktor_version"]}")
+    implementation("io.ktor:ktor-serialization-jackson:${properties["ktor_version"]}")
     implementation("io.ktor:ktor-client-logging-jvm:${properties["ktor_version"]}")
 
     // tests
@@ -108,6 +108,7 @@ publishing {
         }
 
         signing {
+            setRequired({!properties.containsKey("libraryPublishToMavenLocal")})
             val signingKeyId: String? = System.getenv("SIGNING_KEY_ID")
             val signingPassword: String? = System.getenv("SIGNING_PASSWORD")
             val signingKey: String? = System.getenv("SIGNING_KEY")?.let { base64Key ->

@@ -17,18 +17,19 @@ import com.icerockdev.webserver.applyDefaultLogging
 import com.icerockdev.webserver.applyDefaultStatusConfiguration
 import com.icerockdev.webserver.log.ApplicationCallLogging
 import com.icerockdev.webserver.tools.receiveRequest
-import io.ktor.application.Application
-import io.ktor.application.call
-import io.ktor.application.install
-import io.ktor.features.CORS
-import io.ktor.features.CallId
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
-import io.ktor.jackson.jackson
-import io.ktor.response.respond
-import io.ktor.routing.post
-import io.ktor.routing.routing
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.application.install
+import io.ktor.server.plugins.callid.CallId
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.defaultheaders.DefaultHeaders
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
 import org.slf4j.LoggerFactory
 
 fun Application.main() {
@@ -93,7 +94,7 @@ class InitRequest(val amount: Int, val orderId: String) : Request()
 class ConfirmRequest(val paymentId: String) : Request()
 
 class InitResponse(val amount: Int, val paymentId: String) :
-    AbstractResponse(200, "Init payment successful", success = true)
+    AbstractResponse(HttpStatusCode.OK.value, "Init payment successful", success = true)
 
 class ConfirmResponse :
-    AbstractResponse(200, "Confirm payment successful", success = true)
+    AbstractResponse(HttpStatusCode.OK.value, "Confirm payment successful", success = true)
