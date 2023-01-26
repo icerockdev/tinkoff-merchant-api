@@ -11,7 +11,9 @@ import com.icerockdev.service.tinkoff.exception.TinkoffErrorException
 import com.icerockdev.service.tinkoff.response.ErrorResponse
 import com.icerockdev.service.tinkoff.response.Response
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
@@ -35,10 +37,10 @@ internal class TinkoffMerchantAPI(
     }
 
     suspend inline fun <reified T : Response> send(url: String, payload: TinkoffPayload): T {
-        val response = client.post<String>(url) {
+        val response: String = client.post(url) {
             contentType(ContentType.Application.Json)
-            body = payload.data
-        }
+            setBody(payload.data)
+        }.body()
 
         return try {
             val result = mapper.readValue<T>(response)
